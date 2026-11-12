@@ -1,0 +1,195 @@
+<title>Guia de Filmes</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: cabeçalho com sorteio, barra de filtros fixa, grade de cartões com borda na cor do gênero (a mesma dos vídeos). */
+:root{
+  --bg:#f5f2f0; --surface:#ffffff; --surface2:#ebe6e3; --fg:#25201e; --muted:#6d625e; --line:#d9d1cd;
+  --accent:#e8431f; --on-accent:#ffffff;
+  --font:'Poppins',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#201e1c; --surface:#2f2a29; --surface2:#3a3433; --fg:#fcfcfc; --muted:#a79e9a; --line:#443d3b;
+  --accent:#fa5230; color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#201e1c; --surface:#2f2a29; --surface2:#3a3433; --fg:#fcfcfc; --muted:#a79e9a; --line:#443d3b;
+  --accent:#fa5230; color-scheme:dark; }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+.wrap{max-width:1080px;margin:0 auto}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+header.top{display:flex;align-items:center;gap:12px;padding:18px 0}
+header.top img{width:40px;height:auto;display:block}
+header.top b{font-size:17px;letter-spacing:.02em}
+.hero{padding:28px 0 8px;display:grid;gap:18px;max-width:720px}
+.hero h1{font-size:clamp(30px,6vw,50px);line-height:1.08;margin:0;font-weight:700;text-wrap:balance}
+.hero p{margin:0;color:var(--muted);font-size:17px;max-width:56ch}
+.hero .row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{background:var(--accent);color:var(--on-accent);border:0;border-radius:6px;padding:13px 22px;font-weight:600;font-size:16px}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.count{color:var(--muted);font-size:14px}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:14px 0 12px;margin-top:20px;border-bottom:1px solid var(--line);display:grid;gap:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.search{display:flex;gap:10px}
+.search input{flex:1;min-width:0;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:11px 14px;font:inherit}
+.chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chips .lab{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:4px;min-width:74px}
+.chip{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 13px;font-size:14px;display:inline-flex;gap:8px;align-items:center}
+.chip i{width:10px;height:10px;border-radius:50%;background:var(--gc,var(--accent));display:block}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.clear{background:none;border:0;color:var(--accent);font-size:14px;text-decoration:underline;padding:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin-top:24px}
+.card{background:var(--surface);border-radius:10px;border:3px solid var(--gc);text-align:left;padding:0;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.card .cv{padding:20px 18px 14px;background:linear-gradient(160deg,color-mix(in srgb,var(--gc) 28%,var(--surface)),var(--surface) 70%)}
+.card .g{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--fg)}
+.card h2{font-size:23px;line-height:1.15;margin:8px 0 2px;font-weight:700;text-wrap:balance}
+.card .o{color:var(--muted);font-size:13px}
+.card .bd{padding:12px 18px 18px;display:grid;gap:12px;flex:1;align-content:start}
+.meta{color:var(--muted);font-size:13px}
+.notes{display:flex;gap:8px;flex-wrap:wrap}
+.note{border:1px solid var(--line);border-radius:6px;padding:4px 10px;font-size:13px;display:flex;gap:6px;align-items:baseline;background:var(--bg)}
+.note b{font-size:16px;font-variant-numeric:tabular-nums}
+.note span{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:12px;background:var(--surface2);border-radius:4px;padding:2px 8px}
+.card .more{margin-top:auto;color:var(--accent);font-weight:600;font-size:14px;background:none;border:0;padding:0;text-align:left}
+.card.click{cursor:pointer}
+.empty{margin-top:32px;padding:28px;border:1px dashed var(--line);border-radius:10px;color:var(--muted)}
+.ov{position:fixed;inset:0;z-index:20;background:rgba(10,8,7,.72);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:max(16px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 24px max(12px,env(safe-area-inset-left,0px))}
+.dlg{background:var(--surface);border:4px solid var(--gc);border-radius:12px;width:100%;max-width:720px;margin-top:4vh;overflow:hidden;min-width:0}
+.dlg .hd{padding:24px 24px 16px;background:linear-gradient(160deg,color-mix(in srgb,var(--gc) 30%,var(--surface)),var(--surface) 75%);position:relative}
+.dlg h2{font-size:clamp(26px,5vw,36px);line-height:1.1;margin:6px 0 2px;text-wrap:balance;padding-right:44px}
+.x{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);font-size:20px;line-height:1}
+.dlg .bd{padding:6px 24px 26px;display:grid;gap:20px}
+.dlg h3{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 6px;font-weight:600}
+.dlg p{margin:0}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:560px){.cols{grid-template-columns:1fr}}
+.box{border-radius:8px;padding:14px;background:var(--surface2)}
+ul.cast{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px 16px}
+ul.cast li span{display:block;color:var(--muted);font-size:13px}
+.spoil{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+.roll{font-size:13px;color:var(--accent);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+footer{margin-top:48px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:16px}
+</style>
+
+<div class="wrap">
+  <header class="top"><img src="data:image/png;base64,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" alt=""><b>Guia de Filmes</b></header>
+  <section class="hero">
+    <h1>Vale a pena dar uma chance a esse filme?</h1>
+    <p>Cada filme tem um vídeo curto e uma ficha sem spoilers: sobre o que é, quem está no elenco, o que dizem as notas e para quem ele funciona. Você decide em dois minutos.</p>
+    <div class="row">
+      <button class="btn" id="rand" type="button">Sortear um filme</button>
+      <span class="count" id="count"></span>
+    </div>
+  </section>
+
+  <div class="bar" role="search">
+    <div class="search"><label class="sr" for="q">Buscar filme</label>
+      <input id="q" type="search" placeholder="Buscar por título, ator, diretor ou tema" autocomplete="off"></div>
+    <div class="chips" id="gen" aria-label="Filtrar por gênero"><span class="lab">Gênero</span></div>
+    <div class="chips" id="kw" aria-label="Filtrar por palavras-chave"><span class="lab">Clima</span></div>
+    <div class="chips" id="clr" hidden><button class="clear" id="clear" type="button">Limpar filtros</button></div>
+  </div>
+
+  <main><div class="grid" id="grid"></div><div class="empty" id="empty" hidden></div></main>
+  <footer>Notas do IMDb, Rotten Tomatoes e Metacritic via OMDb. Dados de elenco e títulos em português via TMDB. As fichas não trazem spoilers da trama.</footer>
+</div>
+<div class="ov" id="ov" hidden role="dialog" aria-modal="true" aria-labelledby="dt"></div>
+
+<script type="application/json" id="data">[{"id": "a-beira-do-abismo", "titulo": "À Beira do Abismo", "original": "Man on a Ledge", "ano": 2012, "genero": "Suspense", "duracao": 102, "diretor": "Asger Leth", "classificacao": "PG-13 (EUA)", "notas": {"imdb": 6.6, "rt": 31, "meta": 40}, "sinopse": "Nick Cassidy, ex-policial condenado por um roubo que diz não ter cometido, aparece na beirada de um prédio em Nova York. A cidade para para olhar. A negociadora Lydia Mercer tenta convencê-lo a descer, mas nada ali é só o que parece.", "elenco": [["Sam Worthington", "Nick Cassidy"], ["Elizabeth Banks", "Lydia Mercer"], ["Jamie Bell", "Joey Cassidy"], ["Anthony Mackie", "Mike Ackerman"], ["Ed Harris", "David Englander"], ["Genesis Rodriguez", "Angie"]], "palavras": ["tensão", "reviravoltas", "ritmo rápido", "filme pipoca"], "para_quem": "Quem gosta de thrillers de premissa simples e ritmo rápido, que cabem em uma noite sem exigir muito.", "talvez_nao": "Quem espera um roteiro realista ou muito profundo. A nota mediana vem de um enredo que depende de coincidências.", "video": ""}, {"id": "a-epidemia", "titulo": "A Epidemia", "original": "The Crazies", "ano": 2010, "genero": "Terror", "duracao": 101, "diretor": "Breck Eisner", "classificacao": "R (EUA)", "notas": {"imdb": 6.5, "rt": 72, "meta": 56}, "sinopse": "Em Ogden Marsh, uma cidadezinha do interior dos EUA, o xerife David e a esposa Judy, que está grávida, percebem que os moradores estão ficando violentos e confusos. Logo as autoridades isolam a cidade, e o casal precisa lutar para sobreviver e descobrir o que está acontecendo.", "elenco": [["Timothy Olyphant", "David"], ["Radha Mitchell", "Judy"], ["Joe Anderson", "Russell"], ["Danielle Panabaker", "Becca"]], "palavras": ["tensão", "sobrevivência", "perseguição", "ritmo rápido"], "para_quem": "Quem curte terror tenso de cerco e sobrevivência, com clima de paranoia e ritmo que prende do começo ao fim.", "talvez_nao": "Quem não gosta de cenas violentas (classificação R nos EUA) ou espera um terror muito original: é uma refilmagem do longa de 1973 de George A. Romero.", "video": ""}, {"id": "incontrolavel", "titulo": "Incontrolável", "original": "Unstoppable", "ano": 2010, "genero": "Ação", "duracao": 98, "diretor": "Tony Scott", "classificacao": "12 anos (Brasil) · PG-13 (EUA)", "notas": {"imdb": 6.8, "rt": 87, "meta": 69}, "sinopse": "Uma composição carregada de produtos altamente tóxicos está desgovernada e o perigo é iminente. Um condutor e um maquinista experiente precisam evitar que uma pequena cidade em seu caminho seja destruída. A única saída é botar em prática uma operação muito arriscada, mas o tempo corre contra eles.", "elenco": [["Denzel Washington", "Frank Barnes"], ["Chris Pine", "Will Colson"], ["Rosario Dawson", "Connie Hooper"], ["Kevin Dunn", "Oscar Galvin"], ["Ethan Suplee", "Dewey"], ["Jessy Schram", "Darcy Colson"]], "palavras": ["tensão", "ritmo rápido", "inspirado em fatos reais", "emocionante"], "para_quem": "Quem curte ação sem pausa, com tensão do começo ao fim e uma corrida contra o tempo.", "talvez_nao": "Quem prefere histórias calmas e com pouca ação.", "video": "", "fontes": "TMDB (elenco, diretor, orçamento, bilheteria), IMDb (nota 6,8 e Metascore 69), Rotten Tomatoes (87%), coletados em 03/11/2026"}, {"id": "espangles", "titulo": "Espanglês", "original": "Spanglish", "ano": 2004, "genero": "Comédia", "duracao": 131, "diretor": "James L. Brooks", "classificacao": "PG-13 (EUA)", "notas": {"imdb": 6.4, "rt": 54, "meta": 48}, "sinopse": "Flor Moreno, uma mãe mexicana, muda-se para Los Angeles com a filha, Cristina, e vai trabalhar como governanta na casa dos Clasky, uma família rica e cheia de conflitos. Ela não fala inglês, a patroa vive passando dos limites, e o choque entre as duas culturas começa a mexer com todo mundo naquela casa.", "elenco": [["Adam Sandler", "John Clasky"], ["Paz Vega", "Flor Moreno"], ["Téa Leoni", "Deborah Clasky"], ["Shelbie Bruce", "Cristina"], ["Cloris Leachman", "Evelyn Wright"], ["Sarah Steele", "Bernie Clasky"]], "palavras": ["família", "humor", "emocionante", "personagens marcantes"], "para_quem": "Quem gosta de histórias humanas que misturam humor leve, família e choque de culturas, e quer ver um Adam Sandler mais contido.", "talvez_nao": "Quem espera o Adam Sandler das comédias escrachadas ou um filme curto: são 2h11, e a crítica ficou dividida.", "video": "", "fontes": "Wikipedia/TMDB (elenco, direção, 131 min), IMDb 6,4, Rotten Tomatoes 54%, Metacritic 48, coletados em 05/11/2026"}, {"id": "rango", "titulo": "Rango", "original": "Rango", "ano": 2011, "genero": "Animação", "duracao": 107, "diretor": "Gore Verbinski", "classificacao": "PG (EUA)", "notas": {"imdb": 7.3, "rt": 88, "meta": 75}, "sinopse": "Um camaleão de estimação, cheio de imaginação e em crise de identidade, vai parar no meio do Deserto de Mojave depois de um acidente na estrada. Ele chega a Poeira, uma cidadezinha de bichos do deserto castigada pela seca, inventa ser Rango, um pistoleiro destemido, e acaba nomeado xerife. Agora precisa ser o herói que fingiu ser.", "elenco": [["Johnny Depp", "Rango"], ["Isla Fisher", "Feijão"], ["Ned Beatty", "Prefeito John"], ["Bill Nighy", "Jake Cascavel"], ["Alfred Molina", "Roadkill"], ["Harry Dean Stanton", "Balthazar"], ["Abigail Breslin", "Priscilla"]], "palavras": ["família", "humor", "personagens marcantes", "premiado"], "para_quem": "Quem curte faroeste, humor esquisito e animações que divertem adultos e crianças; vencedor do Oscar de Melhor Animação.", "talvez_nao": "Quem espera uma animação fofinha e bem infantil: o tom é estranho, cheio de bichos feios e piadas mais adultas.", "video": "", "fontes": "IMDb 7,3 (08/11/2026), Rotten Tomatoes 88%, Metacritic 75, The Numbers (US$ 135 mi / US$ 245,7 mi, 107 min, PG)"}, {"id": "controle-absoluto", "titulo": "Controle Absoluto", "original": "Eagle Eye", "ano": 2008, "genero": "Suspense", "duracao": 117, "diretor": "D.J. Caruso", "classificacao": "PG-13 (EUA)", "notas": {"imdb": 6.6, "rt": 27, "meta": 43}, "sinopse": "Jerry Shaw, um jovem esperto e sem rumo, acaba de perder o irmão gêmeo. Logo depois do enterro, encontra dinheiro na conta e o apartamento cheio de armas, e uma voz misteriosa ao telefone manda ele fugir do FBI. Rachel, uma mãe solo, recebe a mesma ligação, com ameaças ao filho. Os dois desconhecidos são obrigados a fugir juntos, vigiados por alguém que parece controlar celulares, câmeras e semáforos.", "elenco": [["Shia LaBeouf", "Jerry Shaw"], ["Michelle Monaghan", "Rachel Holloman"], ["Billy Bob Thornton", "Tom Morgan"], ["Rosario Dawson", "Zoe Perez"], ["Michael Chiklis", "Secretário de Defesa Callister"], ["Anthony Mackie", "Major William Bowman"]], "palavras": ["tensão", "perseguição", "reviravoltas", "filme pipoca"], "para_quem": "Quem curte suspense de conspiração, perseguições e ritmo frenético; um ótimo filme pipoca.", "talvez_nao": "Quem exige uma história realista: a trama é exagerada e a crítica pegou pesado com o roteiro.", "video": "", "fontes": "IMDb 6,6 (IMDb, 08/11/2026); Rotten Tomatoes 27% e Metacritic 43, US$ 80 mi / US$ 178 mi, 117 min, elenco e ideia de Spielberg (Wikipedia); Spielberg achava que pareceria ficção científica (Get Surrey/JoBlo)."}, {"id": "quando-as-luzes-se-apagam", "titulo": "Quando as Luzes se Apagam", "original": "Lights Out", "ano": 2016, "genero": "Terror", "duracao": 81, "diretor": "David F. Sandberg", "classificacao": "PG-13 (EUA)", "notas": {"imdb": 6.3, "rt": 74, "meta": 58}, "sinopse": "Rebecca saiu de casa cedo para fugir dos sustos da infância e da instabilidade da mãe, Sophie. Anos depois, o irmão mais novo, Martin, começa a ver as mesmas coisas que assombravam a irmã: uma presença que só aparece quando a luz se apaga. Para protegê-lo, Rebecca volta para a casa da família, armada de velas, lanternas e qualquer fonte de luz que encontrar.", "elenco": [["Teresa Palmer", "Rebecca"], ["Gabriel Bateman", "Martin"], ["Maria Bello", "Sophie"], ["Alexander DiPersia", "Bret"], ["Billy Burke", "Paul"]], "palavras": ["tensão", "sobrevivência", "família", "filme pipoca"], "para_quem": "Quem curte sustos bem construídos e um terror curto e direto (81 minutos), com uma ideia simples e muito eficiente.", "talvez_nao": "Quem procura uma história complexa ou explicações profundas: a trama é simples e aposta mais nos sustos.", "video": ""}, {"id": "duro-de-matar-4", "titulo": "Duro de Matar 4.0", "original": "Live Free or Die Hard", "ano": 2007, "genero": "Ação", "duracao": 129, "diretor": "Len Wiseman", "classificacao": "PG-13 (EUA)", "notas": {"imdb": 7.1, "rt": 82, "meta": 69}, "sinopse": "O detetive John McClane recebe a missão de levar o jovem hacker Matt Farrell até o FBI, em Washington. Logo na chegada, os dois viram alvo de assassinos, enquanto um grupo de criminosos começa a invadir os sistemas do país: trânsito, transportes e bancos saem do controle. Para manter o garoto vivo, o policial à moda antiga precisa enfrentar uma ameaça totalmente digital.", "elenco": [["Bruce Willis", "John McClane"], ["Justin Long", "Matt Farrell"], ["Timothy Olyphant", "Thomas Gabriel"], ["Maggie Q", "Mai Linh"], ["Mary Elizabeth Winstead", "Lucy McClane"], ["Cliff Curtis", "Miguel Bowman"]], "palavras": ["filme pipoca", "ritmo rápido", "perseguição", "personagens marcantes"], "para_quem": "Quem curte ação explosiva, perseguições e a dupla improvável de um policial à moda antiga com um hacker assustado.", "talvez_nao": "Quem procura realismo: as cenas de ação são bem exageradas.", "video": ""}, {"id": "coach-carter", "titulo": "Coach Carter: Treino para a Vida", "original": "Coach Carter", "ano": 2005, "genero": "Drama", "duracao": 136, "diretor": "Thomas Carter", "classificacao": "PG-13 (EUA)", "notas": {"imdb": 7.3, "rt": 64, "meta": 57}, "sinopse": "Inspirado em fatos reais, o filme acompanha Ken Carter, empresário bem-sucedido que aceita treinar o time de basquete da escola onde já foi estrela, em Richmond, na Califórnia. Diante de garotos talentosos, mas indisciplinados, ele impõe um contrato antes mesmo do primeiro treino: terno em dia de jogo, boas notas, primeira fila na sala e presença em todas as aulas.", "elenco": [["Samuel L. Jackson", "Ken Carter"], ["Rob Brown", "Kenyon Stone"], ["Robert Ri'chard", "Damien Carter"], ["Rick Gonzalez", "Timo Cruz"], ["Channing Tatum", "Jason Lyle"], ["Ashanti", "Kyra"]], "palavras": ["inspirado em fatos reais", "emocionante", "personagens marcantes", "esporte"], "para_quem": "Quem gosta de histórias de superação, liderança e esporte com emoção.", "talvez_nao": "Quem quer jogo do começo ao fim: o foco do filme está fora da quadra.", "video": ""}, {"id": "casa-comigo", "titulo": "Casa Comigo?", "original": "Leap Year", "ano": 2010, "genero": "Romance", "duracao": 100, "diretor": "Anand Tucker", "classificacao": "PG (EUA)", "notas": {"imdb": 6.5, "rt": 24, "meta": 33}, "sinopse": "Anna Brady, organizada e perfeccionista, espera há quatro anos que o namorado Jeremy a peça em casamento. Quando ele viaja a trabalho para Dublin, ela decide aproveitar uma antiga tradição irlandesa que permite à mulher fazer o pedido no dia 29 de fevereiro. Mas uma tempestade a deixa num vilarejo distante, e a única saída é contratar o ranzinza Declan para levá-la de carro até a capital.", "elenco": [["Amy Adams", "Anna Brady"], ["Matthew Goode", "Declan"], ["Adam Scott", "Jeremy"], ["John Lithgow", "Jack Brady"]], "palavras": ["humor", "emocionante", "personagens marcantes", "filme pipoca"], "para_quem": "Quem quer um filme leve, com humor, romance de estrada e paisagens incríveis da Irlanda.", "talvez_nao": "Quem foge de clichês românticos: aqui eles estão por toda parte.", "video": ""}]</script>
+<script>
+const FILMS = JSON.parse(document.getElementById('data').textContent);
+// Cor da borda por gênero (a mesma dos vídeos)
+const GC = {'Ação':'#ff3b30','Aventura':'#ff9f0a','Animação':'#30d1be','Comédia':'#ffd60a','Crime':'#78909c','Documentário':'#aaaaaa','Drama':'#0a84ff','Família':'#78dc5a','Fantasia':'#d65af0','Faroeste':'#c48246','Ficção Científica':'#00c8ff','Guerra':'#80965a','História':'#bea06e','Mistério':'#5e5ce6','Música':'#ff69b4','Romance':'#ff78a0','Suspense':'#af52ff','Terror':'#a5142d','Thriller':'#af52ff'};
+const $ = s => document.querySelector(s);
+const st = {q:'', gen:new Set(), kw:new Set(), last:null};
+const norm = s => (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const col = f => GC[f.genero] || '#fa5230';
+const dur = m => m >= 60 ? Math.floor(m/60)+'h'+String(m%60).padStart(2,'0') : m+' min';
+
+function haystack(f){ return norm([f.titulo,f.original,f.genero,f.diretor,f.sinopse,(f.palavras||[]).join(' '),(f.elenco||[]).map(e=>e.join(' ')).join(' ')].join(' ')); }
+function filtered(){
+  const q = norm(st.q).trim();
+  return FILMS.filter(f => (!st.gen.size || st.gen.has(f.genero)) &&
+    [...st.kw].every(k => (f.palavras||[]).includes(k)) && (!q || haystack(f).includes(q)));
+}
+function chipRow(el, values, set, colorOf){
+  [...el.querySelectorAll('.chip')].forEach(c=>c.remove());
+  values.forEach(v => {
+    const b = document.createElement('button'); b.type='button'; b.className='chip';
+    b.setAttribute('aria-pressed', set.has(v)); if(colorOf) b.style.setProperty('--gc', colorOf(v));
+    b.innerHTML = (colorOf?'<i></i>':'') + esc(v);
+    b.onclick = () => { set.has(v) ? set.delete(v) : set.add(v); render(); };
+    el.appendChild(b);
+  });
+}
+function card(f){
+  const n = f.notas||{};
+  const a = document.createElement('article'); a.className='card click'; a.style.setProperty('--gc', col(f));
+  a.innerHTML = `<div class="cv"><div class="g">${esc(f.genero)}</div><h2>${esc(f.titulo)}</h2>${f.original&&f.original!==f.titulo?`<div class="o">${esc(f.original)}</div>`:''}</div>
+  <div class="bd"><div class="meta">${f.ano} · ${dur(f.duracao)} · dir. ${esc(f.diretor)}</div>
+  <div class="notes">${n.imdb!=null?`<div class="note"><b>${String(n.imdb).replace('.',',')}</b><span>IMDb</span></div>`:''}${n.rt!=null?`<div class="note"><b>${n.rt}%</b><span>Rotten T.</span></div>`:''}${n.meta!=null?`<div class="note"><b>${n.meta}</b><span>Metacritic</span></div>`:''}</div>
+  <div class="tags">${(f.palavras||[]).slice(0,4).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+  <button class="more" type="button">Ver ficha do filme</button></div>`;
+  a.onclick = () => openFilm(f.id);
+  return a;
+}
+function render(){
+  const genres = [...new Set(FILMS.map(f=>f.genero))].sort((a,b)=>a.localeCompare(b,'pt'));
+  const kws = [...new Set(FILMS.flatMap(f=>f.palavras||[]))].sort((a,b)=>a.localeCompare(b,'pt'));
+  chipRow($('#gen'), genres, st.gen, v=>GC[v]||'#fa5230'); chipRow($('#kw'), kws, st.kw, null);
+  const list = filtered(), g = $('#grid'); g.innerHTML=''; list.forEach(f=>g.appendChild(card(f)));
+  $('#count').textContent = FILMS.length===1 ? '1 filme no guia por enquanto' : `${list.length} de ${FILMS.length} filmes`;
+  $('#clr').hidden = !(st.gen.size||st.kw.size||st.q);
+  const e = $('#empty'); e.hidden = list.length>0;
+  if(!list.length) e.textContent = 'Nenhum filme combina com esses filtros. Tire uma palavra-chave ou um gênero para ver mais opções.';
+}
+function openFilm(id, rolling){
+  const f = FILMS.find(x=>x.id===id); if(!f) return;
+  const n = f.notas||{}, ov = $('#ov');
+  ov.style.setProperty('--gc', col(f)); ov.hidden = false; document.body.style.overflow='hidden';
+  ov.innerHTML = `<div class="dlg"><div class="hd"><button class="x" type="button" aria-label="Fechar" id="cl">×</button>
+    <div class="meta" style="font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--fg)">${esc(f.genero)} · ${f.ano}</div>
+    <h2 id="dt">${esc(f.titulo)}</h2>${f.original&&f.original!==f.titulo?`<div class="meta">${esc(f.original)}</div>`:''}
+    <div class="notes" style="margin-top:14px">${n.imdb!=null?`<div class="note"><b>${String(n.imdb).replace('.',',')}</b><span>IMDb</span></div>`:''}${n.rt!=null?`<div class="note"><b>${n.rt}%</b><span>Rotten Tomatoes</span></div>`:''}${n.meta!=null?`<div class="note"><b>${n.meta}</b><span>Metacritic</span></div>`:''}</div></div>
+    <div class="bd">
+      ${f.video?`<div><a class="btn" style="display:inline-block;text-decoration:none" href="${esc(f.video)}" target="_blank" rel="noopener">Assistir ao vídeo do guia</a></div>`:''}
+      <div><h3>Sobre o que é</h3><p>${esc(f.sinopse)}</p></div>
+      <div class="cols"><div class="box"><h3>Para quem é</h3><p>${esc(f.para_quem||'')}</p></div><div class="box"><h3>Talvez não seja para você se</h3><p>${esc(f.talvez_nao||'')}</p></div></div>
+      <div><h3>Elenco</h3><ul class="cast">${(f.elenco||[]).map(([a,p])=>`<li>${esc(a)}<span>${esc(p)}</span></li>`).join('')}</ul></div>
+      <div><h3>Ficha</h3><p>Direção de ${esc(f.diretor)} · ${dur(f.duracao)} · classificação ${esc(f.classificacao||'')}</p></div>
+      <div class="tags">${(f.palavras||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+      <div class="spoil">Esta ficha não traz spoilers: ela para antes das reviravoltas da história.</div>
+    </div></div>`;
+  $('#cl').onclick = closeFilm; $('#cl').focus();
+  ov.onclick = e => { if(e.target===ov) closeFilm(); };
+  ov.scrollTop = 0;
+  if (location.hash !== '#f-'+id) history.replaceState(null,'','#f-'+id);
+}
+function closeFilm(){ $('#ov').hidden = true; document.body.style.overflow=''; if(location.hash) history.replaceState(null,'',location.pathname+location.search); }
+document.addEventListener('keydown', e => { if(e.key==='Escape' && !$('#ov').hidden) closeFilm(); });
+function route(){ const m = location.hash.match(/^#f-([a-z0-9-]+)$/); if(m && FILMS.some(f=>f.id===m[1])) openFilm(m[1]); else if(!$('#ov').hidden){ $('#ov').hidden=true; document.body.style.overflow=''; } }
+window.addEventListener('hashchange', route);
+
+$('#rand').onclick = () => {
+  const pool = filtered(), all = pool.length ? pool : FILMS;
+  if(!pool.length){ st.gen.clear(); st.kw.clear(); st.q=''; $('#q').value=''; render(); }
+  let opts = all.filter(f=>f.id!==st.last); if(!opts.length) opts = all;
+  const pick = opts[Math.floor(Math.random()*opts.length)]; st.last = pick.id;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(all.length<2 || reduce){ openFilm(pick.id); return; }
+  const b = $('#rand'); b.disabled = true; let i = 0; const t0 = Date.now();
+  const tick = () => { b.textContent = all[i++ % all.length].titulo; if(Date.now()-t0 < 900) setTimeout(tick, 90); else { b.textContent='Sortear um filme'; b.disabled=false; openFilm(pick.id); } };
+  tick();
+};
+$('#q').oninput = e => { st.q = e.target.value; render(); };
+$('#clear').onclick = () => { st.gen.clear(); st.kw.clear(); st.q=''; $('#q').value=''; render(); };
+render(); route();
+</script>
