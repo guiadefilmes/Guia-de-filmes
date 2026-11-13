@@ -48,6 +48,16 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .chip i{width:10px;height:10px;border-radius:50%;background:var(--gc,var(--accent));display:block}
 .chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .clear{background:none;border:0;color:var(--accent);font-size:14px;text-decoration:underline;padding:4px}
+@media (max-width:700px){
+  .bar{padding:10px 0 8px;gap:7px;margin-top:14px}
+  .search input{padding:9px 12px}
+  .chips{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;-webkit-overflow-scrolling:touch;gap:6px;
+    margin-inline:-16px;padding:2px 16px;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+  .chips::-webkit-scrollbar{display:none}
+  .chips .lab{min-width:0;flex:0 0 auto;font-size:11px;margin-right:2px}
+  .chip{flex:0 0 auto;white-space:nowrap;padding:5px 11px;font-size:13px}
+  #clr{-webkit-mask-image:none;mask-image:none;padding-block:0}
+}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin-top:24px}
 .card{background:var(--surface);border-radius:10px;border:3px solid var(--gc);text-align:left;padding:0;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 .card .cv{padding:20px 18px 14px;background:linear-gradient(160deg,color-mix(in srgb,var(--gc) 28%,var(--surface)),var(--surface) 70%)}
