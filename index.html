@@ -48,6 +48,11 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .chip i{width:10px;height:10px;border-radius:50%;background:var(--gc,var(--accent));display:block}
 .chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .clear{background:none;border:0;color:var(--accent);font-size:14px;text-decoration:underline;padding:4px}
+.ftog{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0 14px;font-size:15px;font-weight:600}
+.ftog[aria-expanded="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.ftog b{background:var(--accent);color:var(--on-accent);border-radius:999px;min-width:20px;height:20px;padding:0 6px;font-size:12px;display:inline-grid;place-items:center}
+.fp{display:grid;gap:10px;max-height:min(46vh,320px);overflow-y:auto;overscroll-behavior:contain}
+.act{color:var(--muted);font-size:14px}
 @media (max-width:700px){
   .bar{padding:10px 0 8px;gap:7px;margin-top:14px}
   .search input{padding:9px 12px}
@@ -116,10 +121,13 @@ footer{margin-top:48px;color:var(--muted);font-size:13px;border-top:1px solid va
 
   <div class="bar" role="search">
     <div class="search"><label class="sr" for="q">Buscar filme</label>
-      <input id="q" type="search" placeholder="Buscar por título, ator, diretor ou tema" autocomplete="off"></div>
-    <div class="chips" id="gen" aria-label="Filtrar por gênero"><span class="lab">Gênero</span></div>
-    <div class="chips" id="kw" aria-label="Filtrar por palavras-chave"><span class="lab">Clima</span></div>
-    <div class="chips" id="clr" hidden><button class="clear" id="clear" type="button">Limpar filtros</button></div>
+      <input id="q" type="search" placeholder="Buscar por título, ator, diretor ou tema" autocomplete="off">
+      <button class="ftog" id="ftog" type="button" aria-expanded="false" aria-controls="fp"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>Filtros<b id="fn" hidden></b></button></div>
+    <div class="fp" id="fp" hidden>
+      <div class="chips" id="gen" aria-label="Filtrar por gênero"><span class="lab">Gênero</span></div>
+      <div class="chips" id="kw" aria-label="Filtrar por palavras-chave"><span class="lab">Clima</span></div>
+    </div>
+    <div class="chips" id="clr" hidden><span class="act" id="act"></span><button class="clear" id="clear" type="button">Limpar filtros</button></div>
   </div>
 
   <main><div class="grid" id="grid"></div><div class="empty" id="empty" hidden></div></main>
@@ -172,7 +180,9 @@ function render(){
   chipRow($('#gen'), genres, st.gen, v=>GC[v]||'#fa5230'); chipRow($('#kw'), kws, st.kw, null);
   const list = filtered(), g = $('#grid'); g.innerHTML=''; list.forEach(f=>g.appendChild(card(f)));
   $('#count').textContent = FILMS.length===1 ? '1 filme no guia por enquanto' : `${list.length} de ${FILMS.length} filmes`;
-  $('#clr').hidden = !(st.gen.size||st.kw.size||st.q);
+  const nf = st.gen.size + st.kw.size; $('#fn').hidden = !nf; $('#fn').textContent = nf;
+  $('#act').textContent = nf ? [...st.gen, ...st.kw].join(' · ') : '';
+  $('#clr').hidden = !(nf||st.q);
   const e = $('#empty'); e.hidden = list.length>0;
   if(!list.length) e.textContent = 'Nenhum filme combina com esses filtros. Tire uma palavra-chave ou um gênero para ver mais opções.';
 }
@@ -224,6 +234,10 @@ $('#rand').onclick = () => {
   tick();
 };
 $('#q').oninput = e => { st.q = e.target.value; render(); };
+let fpY = 0;
+function setFp(open){ $('#fp').hidden = !open; $('#ftog').setAttribute('aria-expanded', open); fpY = window.scrollY; }
+$('#ftog').onclick = () => setFp($('#fp').hidden);
+window.addEventListener('scroll', () => { if(!$('#fp').hidden && Math.abs(window.scrollY - fpY) > 220) setFp(false); }, {passive:true});
 $('#clear').onclick = () => { st.gen.clear(); st.kw.clear(); st.q=''; $('#q').value=''; render(); };
 render(); route();
 </script>
