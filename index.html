@@ -48,7 +48,9 @@ header.top b{white-space:nowrap}
 .count{color:var(--muted);font-size:14px}
 .bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:14px 0 12px;margin-top:20px;border-bottom:1px solid var(--line);display:grid;gap:10px}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
-.search{display:flex;gap:10px}
+.bar{grid-template-columns:minmax(0,1fr)}
+.search{display:flex;gap:10px;min-width:0}
+.search input{width:100%;text-overflow:ellipsis}
 .search input{flex:1;min-width:0;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:11px 14px;font:inherit}
 .chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .chips .lab{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:4px;min-width:74px}
@@ -251,6 +253,7 @@ $('#q').oninput = e => { st.q = e.target.value; render(); };
 let fpY = 0;
 function setFp(open){ $('#fp').hidden = !open; $('#ftog').setAttribute('aria-expanded', open); fpY = window.scrollY; }
 $('#ftog').onclick = () => setFp($('#fp').hidden);
+(function(){ const q=$('#q'), ph=()=>{ q.placeholder = innerWidth<520 ? 'Filme, ator ou tema' : 'Buscar por título, ator, diretor ou tema'; }; ph(); addEventListener('resize', ph); })();
 window.addEventListener('scroll', () => { if(!$('#fp').hidden && Math.abs(window.scrollY - fpY) > 220) setFp(false); }, {passive:true});
 $('#clear').onclick = () => { st.gen.clear(); st.kw.clear(); st.q=''; $('#q').value=''; render(); };
 render(); route();
