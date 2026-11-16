@@ -197,11 +197,12 @@ function render(){
   const e = $('#empty'); e.hidden = list.length>0;
   if(!list.length) e.textContent = 'Nenhum filme combina com esses filtros. Tire uma palavra-chave ou um gênero para ver mais opções.';
 }
+function gc(path, title){ try{ if(window.goatcounter && goatcounter.count) goatcounter.count({path, title, event:true}); }catch(e){} }
 function vidsHtml(f){
   const v = Object.assign({}, f.videos||{}); if(f.video && !Object.keys(v).length) v.video = f.video;
   const nomes = {youtube:'YouTube', tiktok:'TikTok', instagram:'Instagram', video:'o vídeo'};
   const ks = ['youtube','tiktok','instagram','video'].filter(k=>v[k]); if(!ks.length) return '';
-  return `<div><h3>Assista ao vídeo do guia</h3><div class="vids">${ks.map(k=>`<a class="btn" href="${esc(v[k])}" target="_blank" rel="noopener">${k==='video'?'Assistir ao vídeo':'Ver no '+nomes[k]}</a>`).join('')}</div></div>`;
+  return `<div><h3>Assista ao vídeo do guia</h3><div class="vids">${ks.map(k=>`<a class="btn" href="${esc(v[k])}" target="_blank" rel="noopener" data-goatcounter-click="video-${k}-${esc(f.id)}" data-goatcounter-title="${esc(f.titulo)} (${k})">${k==='video'?'Assistir ao vídeo':'Ver no '+nomes[k]}</a>`).join('')}</div></div>`;
 }
 function watchHtml(f){
   const w = f.onde_assistir; if(!w) return '';
@@ -213,6 +214,7 @@ function watchHtml(f){
 }
 function openFilm(id, rolling){
   const f = FILMS.find(x=>x.id===id); if(!f) return;
+  gc('ficha-'+f.id, 'Ficha: '+f.titulo);
   const n = f.notas||{}, ov = $('#ov');
   ov.style.setProperty('--gc', col(f)); ov.hidden = false; document.body.style.overflow='hidden';
   ov.innerHTML = `<div class="dlg"><div class="hd"><button class="x" type="button" aria-label="Fechar" id="cl">×</button>
@@ -260,5 +262,6 @@ $('#clear').onclick = () => { st.gen.clear(); st.kw.clear(); st.q=''; $('#q').va
 render(); route();
 </script>
 
+<script data-goatcounter="https://oguiadefimes.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
