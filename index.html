@@ -197,7 +197,7 @@ function render(){
   const e = $('#empty'); e.hidden = list.length>0;
   if(!list.length) e.textContent = 'Nenhum filme combina com esses filtros. Tire uma palavra-chave ou um gênero para ver mais opções.';
 }
-function gc(path, title){ try{ if(window.goatcounter && goatcounter.count) goatcounter.count({path, title, event:true}); }catch(e){} }
+function gc(path, title, n){ try{ if(window.goatcounter && goatcounter.count) goatcounter.count({path, title, event:true}); else if((n||0) < 20) setTimeout(()=>gc(path, title, (n||0)+1), 500); }catch(e){} }  // espera o contador carregar (ficha aberta por link direto)
 function vidsHtml(f){
   const v = Object.assign({}, f.videos||{}); if(f.video && !Object.keys(v).length) v.video = f.video;
   const nomes = {youtube:'YouTube', tiktok:'TikTok', instagram:'Instagram', video:'o vídeo'};
