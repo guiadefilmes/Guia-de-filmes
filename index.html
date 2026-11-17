@@ -102,6 +102,22 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .simc span{font-size:12px;color:var(--muted)}
 .simc:hover{background:color-mix(in srgb,var(--gc) 14%,var(--bg))}
 .hint{font-size:12px;color:var(--muted);flex:0 0 auto}
+.qz .dlg{border-color:var(--accent)}
+.qz .hd{background:linear-gradient(160deg,color-mix(in srgb,var(--accent) 22%,var(--surface)),var(--surface) 75%)}
+.qstep{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.qbar{height:4px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-top:12px}
+.qbar i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.qopts{display:grid;gap:10px}
+.qopt{text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:13px 16px;font-size:16px;display:grid;gap:2px}
+.qopt span{font-size:13px;color:var(--muted)}
+.qopt:hover,.qopt[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--bg))}
+.qnav{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.qnav .back{background:none;border:0;color:var(--muted);text-decoration:underline;padding:4px}
+.qres{border:3px solid var(--gc);border-radius:10px;padding:16px 18px;display:grid;gap:8px;background:linear-gradient(160deg,color-mix(in srgb,var(--gc) 18%,var(--surface)),var(--surface) 70%)}
+.dlg .qres h3{margin:0;font-size:24px;line-height:1.15;text-transform:none;letter-spacing:0;color:var(--fg);font-weight:700}
+.why{font-size:14px;color:var(--muted)}
+.why b{color:var(--fg);font-weight:600}
+.copied{font-size:13px;color:var(--accent)}
 .empty{margin-top:32px;padding:28px;border:1px dashed var(--line);border-radius:10px;color:var(--muted)}
 .ov{position:fixed;inset:0;z-index:20;background:rgba(10,8,7,.72);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:max(16px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 24px max(12px,env(safe-area-inset-left,0px))}
 .dlg{background:var(--surface);border:4px solid var(--gc);border-radius:12px;width:100%;max-width:720px;margin-top:4vh;overflow:hidden;min-width:0}
@@ -131,7 +147,8 @@ footer{margin-top:48px;color:var(--muted);font-size:13px;border-top:1px solid va
     <h1>Vale a pena dar uma chance a esse filme?</h1>
     <p>Cada filme tem um vídeo curto e uma ficha sem spoilers: sobre o que é, quem está no elenco, o que dizem as notas e para quem ele funciona. Você decide em dois minutos.</p>
     <div class="row">
-      <button class="btn" id="rand" type="button">Sortear um filme</button>
+      <button class="btn" id="quiz" type="button">Me ajuda a escolher</button>
+      <button class="btn ghost" id="rand" type="button">Sortear um filme</button>
       <span class="count" id="count"></span>
     </div>
   </section>
@@ -153,6 +170,7 @@ footer{margin-top:48px;color:var(--muted);font-size:13px;border-top:1px solid va
   <footer>Siga <b>@oguiadefilmes</b> no <a href="https://www.youtube.com/@oguiadefilmes" target="_blank" rel="noopener">YouTube</a>, no <a href="https://www.tiktok.com/@oguiadefilmes" target="_blank" rel="noopener">TikTok</a> e no <a href="https://www.instagram.com/oguiadefilmes/" target="_blank" rel="noopener">Instagram</a>.<br><br>Notas do IMDb, Rotten Tomatoes e Metacritic via OMDb. Dados de elenco e títulos em português via TMDB. Onde assistir: dados do JustWatch via TMDB. As fichas não trazem spoilers da trama.</footer>
 </div>
 <div class="ov" id="ov" hidden role="dialog" aria-modal="true" aria-labelledby="dt"></div>
+<div class="ov qz" id="qz" hidden role="dialog" aria-modal="true" aria-labelledby="qt"></div>
 
 <script type="application/json" id="data">[{"id": "a-beira-do-abismo", "titulo": "À Beira do Abismo", "original": "Man on a Ledge", "ano": 2012, "genero": "Suspense", "duracao": 102, "diretor": "Asger Leth", "classificacao": "PG-13 (EUA)", "notas": {"imdb": 6.6, "rt": 31, "meta": 40}, "sinopse": "Nick Cassidy, ex-policial condenado por um roubo que diz não ter cometido, aparece na beirada de um prédio em Nova York. A cidade para para olhar. A negociadora Lydia Mercer tenta convencê-lo a descer, mas nada ali é só o que parece.", "elenco": [["Sam Worthington", "Nick Cassidy"], ["Elizabeth Banks", "Lydia Mercer"], ["Jamie Bell", "Joey Cassidy"], ["Anthony Mackie", "Mike Ackerman"], ["Ed Harris", "David Englander"], ["Genesis Rodriguez", "Angie"]], "palavras": ["tensão", "reviravoltas", "ritmo rápido", "filme pipoca"], "para_quem": "Quem gosta de thrillers de premissa simples e ritmo rápido, que cabem em uma noite sem exigir muito.", "talvez_nao": "Quem espera um roteiro realista ou muito profundo. A nota mediana vem de um enredo que depende de coincidências.", "video": "https://youtube.com/shorts/3Ai4P5DG8bQ", "onde_assistir": {"assinatura": ["Universal+ (canal Prime Video)", "Lionsgate+ (canal Prime Video)"], "aluguel": ["Apple TV"], "compra": ["Apple TV"], "data": "2026-11-11"}, "publicado": true, "videos": {"youtube": "https://youtube.com/shorts/3Ai4P5DG8bQ", "tiktok": "https://vt.tiktok.com/ZSpbqDmfv/", "instagram": "https://www.instagram.com/reel/DfxOAa4xOw9/"}}, {"id": "a-epidemia", "titulo": "A Epidemia", "original": "The Crazies", "ano": 2010, "genero": "Terror", "duracao": 101, "diretor": "Breck Eisner", "classificacao": "R (EUA)", "notas": {"imdb": 6.5, "rt": 72, "meta": 56}, "sinopse": "Em Ogden Marsh, uma cidadezinha do interior dos EUA, o xerife David e a esposa Judy, que está grávida, percebem que os moradores estão ficando violentos e confusos. Logo as autoridades isolam a cidade, e o casal precisa lutar para sobreviver e descobrir o que está acontecendo.", "elenco": [["Timothy Olyphant", "David"], ["Radha Mitchell", "Judy"], ["Joe Anderson", "Russell"], ["Danielle Panabaker", "Becca"]], "palavras": ["tensão", "sobrevivência", "perseguição", "ritmo rápido"], "para_quem": "Quem curte terror tenso de cerco e sobrevivência, com clima de paranoia e ritmo que prende do começo ao fim.", "talvez_nao": "Quem não gosta de cenas violentas (classificação R nos EUA) ou espera um terror muito original: é uma refilmagem do longa de 1973 de George A. Romero.", "video": "https://youtube.com/shorts/S2PonnvunWQ", "onde_assistir": {"assinatura": ["Universal+ (canal Prime Video)", "Lionsgate+ (canal Prime Video)"], "data": "2026-11-11"}, "publicado": true, "videos": {"youtube": "https://youtube.com/shorts/S2PonnvunWQ", "tiktok": "https://vt.tiktok.com/ZSpgARgYU/", "instagram": "https://www.instagram.com/reel/DfyJGwcMvM7/"}}, {"id": "incontrolavel", "titulo": "Incontrolável", "original": "Unstoppable", "ano": 2010, "genero": "Ação", "duracao": 98, "diretor": "Tony Scott", "classificacao": "12 anos (Brasil) · PG-13 (EUA)", "notas": {"imdb": 6.8, "rt": 87, "meta": 69}, "sinopse": "Uma composição carregada de produtos altamente tóxicos está desgovernada e o perigo é iminente. Um condutor e um maquinista experiente precisam evitar que uma pequena cidade em seu caminho seja destruída. A única saída é botar em prática uma operação muito arriscada, mas o tempo corre contra eles.", "elenco": [["Denzel Washington", "Frank Barnes"], ["Chris Pine", "Will Colson"], ["Rosario Dawson", "Connie Hooper"], ["Kevin Dunn", "Oscar Galvin"], ["Ethan Suplee", "Dewey"], ["Jessy Schram", "Darcy Colson"]], "palavras": ["tensão", "ritmo rápido", "inspirado em fatos reais", "emocionante"], "para_quem": "Quem curte ação sem pausa, com tensão do começo ao fim e uma corrida contra o tempo.", "talvez_nao": "Quem prefere histórias calmas e com pouca ação.", "video": "https://youtube.com/shorts/r7ueqPim3Zc", "fontes": "TMDB (elenco, diretor, orçamento, bilheteria), IMDb (nota 6,8 e Metascore 69), Rotten Tomatoes (87%), coletados em 03/11/2026", "onde_assistir": {"assinatura": ["Disney+"], "data": "2026-11-11"}, "publicado": true, "videos": {"youtube": "https://youtube.com/shorts/r7ueqPim3Zc", "tiktok": "https://vt.tiktok.com/ZSpndEv47/", "instagram": "https://www.instagram.com/reel/Df2Jv0-JC6H/"}}, {"id": "espangles", "titulo": "Espanglês", "original": "Spanglish", "ano": 2004, "genero": "Comédia", "duracao": 131, "diretor": "James L. Brooks", "classificacao": "PG-13 (EUA)", "notas": {"imdb": 6.4, "rt": 54, "meta": 48}, "sinopse": "Flor Moreno, uma mãe mexicana, muda-se para Los Angeles com a filha, Cristina, e vai trabalhar como governanta na casa dos Clasky, uma família rica e cheia de conflitos. Ela não fala inglês, a patroa vive passando dos limites, e o choque entre as duas culturas começa a mexer com todo mundo naquela casa.", "elenco": [["Adam Sandler", "John Clasky"], ["Paz Vega", "Flor Moreno"], ["Téa Leoni", "Deborah Clasky"], ["Shelbie Bruce", "Cristina"], ["Cloris Leachman", "Evelyn Wright"], ["Sarah Steele", "Bernie Clasky"]], "palavras": ["família", "humor", "emocionante", "personagens marcantes"], "para_quem": "Quem gosta de histórias humanas que misturam humor leve, família e choque de culturas, e quer ver um Adam Sandler mais contido.", "talvez_nao": "Quem espera o Adam Sandler das comédias escrachadas ou um filme curto: são 2h11, e a crítica ficou dividida.", "video": "https://youtube.com/shorts/c6FCjeapYv4", "fontes": "Wikipedia/TMDB (elenco, direção, 131 min), IMDb 6,4, Rotten Tomatoes 54%, Metacritic 48, coletados em 05/11/2026", "onde_assistir": {"assinatura": ["HBO Max", "Sony One (canal Prime Video)"], "aluguel": ["Claro video", "Amazon", "Apple TV"], "compra": ["Apple TV", "Amazon"], "data": "2026-11-11"}, "publicado": true, "videos": {"youtube": "https://youtube.com/shorts/c6FCjeapYv4", "tiktok": "https://vt.tiktok.com/ZSpbTHwnA/", "instagram": "https://www.instagram.com/reel/DfxnCcQPHXY/"}}, {"id": "rango", "titulo": "Rango", "original": "Rango", "ano": 2011, "genero": "Animação", "duracao": 107, "diretor": "Gore Verbinski", "classificacao": "PG (EUA)", "notas": {"imdb": 7.3, "rt": 88, "meta": 75}, "sinopse": "Um camaleão de estimação, cheio de imaginação e em crise de identidade, vai parar no meio do Deserto de Mojave depois de um acidente na estrada. Ele chega a Poeira, uma cidadezinha de bichos do deserto castigada pela seca, inventa ser Rango, um pistoleiro destemido, e acaba nomeado xerife. Agora precisa ser o herói que fingiu ser.", "elenco": [["Johnny Depp", "Rango"], ["Isla Fisher", "Feijão"], ["Ned Beatty", "Prefeito John"], ["Bill Nighy", "Jake Cascavel"], ["Alfred Molina", "Roadkill"], ["Harry Dean Stanton", "Balthazar"], ["Abigail Breslin", "Priscilla"]], "palavras": ["família", "humor", "personagens marcantes", "premiado"], "para_quem": "Quem curte faroeste, humor esquisito e animações que divertem adultos e crianças; vencedor do Oscar de Melhor Animação.", "talvez_nao": "Quem espera uma animação fofinha e bem infantil: o tom é estranho, cheio de bichos feios e piadas mais adultas.", "video": "https://youtube.com/shorts/Mwvck34-gVo", "fontes": "IMDb 7,3 (08/11/2026), Rotten Tomatoes 88%, Metacritic 75, The Numbers (US$ 135 mi / US$ 245,7 mi, 107 min, PG)", "onde_assistir": {"assinatura": ["Netflix", "Claro tv+", "Universal+ (canal Prime Video)"], "aluguel": ["Apple TV", "Amazon"], "compra": ["Apple TV", "Amazon"], "data": "2026-11-11"}, "publicado": true, "videos": {"youtube": "https://youtube.com/shorts/Mwvck34-gVo", "tiktok": "https://vt.tiktok.com/ZSpp36QFp/", "instagram": "https://www.instagram.com/reel/DfzXll0P9--/"}}, {"id": "controle-absoluto", "titulo": "Controle Absoluto", "original": "Eagle Eye", "ano": 2008, "genero": "Suspense", "duracao": 117, "diretor": "D.J. Caruso", "classificacao": "PG-13 (EUA)", "notas": {"imdb": 6.6, "rt": 27, "meta": 43}, "sinopse": "Jerry Shaw, um jovem esperto e sem rumo, acaba de perder o irmão gêmeo. Logo depois do enterro, encontra dinheiro na conta e o apartamento cheio de armas, e uma voz misteriosa ao telefone manda ele fugir do FBI. Rachel, uma mãe solo, recebe a mesma ligação, com ameaças ao filho. Os dois desconhecidos são obrigados a fugir juntos, vigiados por alguém que parece controlar celulares, câmeras e semáforos.", "elenco": [["Shia LaBeouf", "Jerry Shaw"], ["Michelle Monaghan", "Rachel Holloman"], ["Billy Bob Thornton", "Tom Morgan"], ["Rosario Dawson", "Zoe Perez"], ["Michael Chiklis", "Secretário de Defesa Callister"], ["Anthony Mackie", "Major William Bowman"]], "palavras": ["tensão", "perseguição", "reviravoltas", "filme pipoca"], "para_quem": "Quem curte suspense de conspiração, perseguições e ritmo frenético; um ótimo filme pipoca.", "talvez_nao": "Quem exige uma história realista: a trama é exagerada e a crítica pegou pesado com o roteiro.", "video": "https://youtube.com/shorts/-l3ZvlMrm9w", "fontes": "IMDb 6,6 (IMDb, 08/11/2026); Rotten Tomatoes 27% e Metacritic 43, US$ 80 mi / US$ 178 mi, 117 min, elenco e ideia de Spielberg (Wikipedia); Spielberg achava que pareceria ficção científica (Get Surrey/JoBlo).", "onde_assistir": {"gratis": ["Mercado Play"], "aluguel": ["Amazon", "Apple TV"], "compra": ["Apple TV", "Amazon"], "data": "2026-11-11"}, "publicado": true, "videos": {"youtube": "https://youtube.com/shorts/-l3ZvlMrm9w", "tiktok": "https://vt.tiktok.com/ZSpsTsKq5/", "instagram": "https://www.instagram.com/reel/Df0bpOkv5Mz/"}}, {"id": "quando-as-luzes-se-apagam", "titulo": "Quando as Luzes se Apagam", "original": "Lights Out", "ano": 2016, "genero": "Terror", "duracao": 81, "diretor": "David F. Sandberg", "classificacao": "PG-13 (EUA)", "notas": {"imdb": 6.3, "rt": 74, "meta": 58}, "sinopse": "Rebecca saiu de casa cedo para fugir dos sustos da infância e da instabilidade da mãe, Sophie. Anos depois, o irmão mais novo, Martin, começa a ver as mesmas coisas que assombravam a irmã: uma presença que só aparece quando a luz se apaga. Para protegê-lo, Rebecca volta para a casa da família, armada de velas, lanternas e qualquer fonte de luz que encontrar.", "elenco": [["Teresa Palmer", "Rebecca"], ["Gabriel Bateman", "Martin"], ["Maria Bello", "Sophie"], ["Alexander DiPersia", "Bret"], ["Billy Burke", "Paul"]], "palavras": ["tensão", "sobrevivência", "família", "filme pipoca"], "para_quem": "Quem curte sustos bem construídos e um terror curto e direto (81 minutos), com uma ideia simples e muito eficiente.", "talvez_nao": "Quem procura uma história complexa ou explicações profundas: a trama é simples e aposta mais nos sustos.", "video": "https://youtube.com/shorts/TvXd-9RAPYo", "onde_assistir": {"assinatura": ["HBO Max"], "aluguel": ["Apple TV", "Amazon"], "compra": ["Apple TV", "Amazon"], "data": "2026-11-11"}, "publicado": true, "videos": {"youtube": "https://youtube.com/shorts/TvXd-9RAPYo", "tiktok": "https://vt.tiktok.com/ZSpnbEbNw/", "instagram": "https://www.instagram.com/reel/Df2yuHqOljg/"}}]</script>
 <script>
@@ -285,6 +303,104 @@ $('#rand').onclick = () => {
   const tick = () => { b.textContent = all[i++ % all.length].titulo; if(Date.now()-t0 < 900) setTimeout(tick, 90); else { b.textContent='Sortear um filme'; b.disabled=false; openFilm(pick.id); } };
   tick();
 };
+
+// ---------- Quiz "Me ajuda a escolher" ----------
+const idade = f => { const c = String(f.classificacao||'');
+  let m = c.match(/(\d+)\s*anos/); if(m) return +m[1]; if(/livre/i.test(c)) return 0;
+  if(/PG-13/.test(c)) return 12; if(/\bPG\b/.test(c)) return 10; if(/\bG\b/.test(c)) return 0; if(/\bR\b/.test(c)) return 16; return 14; };
+const has = (f,k) => (f.palavras||[]).includes(k);
+const QS = [
+ {id:'clima', t:'Que tipo de sensação você quer hoje?', o:[
+   {l:'Levar uns sustos', s:'terror e tensão', g:{'Terror':4}, k:{'tensão':2,'sobrevivência':1}, why:'sustos'},
+   {l:'Ficar na ponta da cadeira', s:'suspense, perigo, reviravoltas', g:{'Suspense':4,'Ação':2,'Guerra':2,'Ficção Científica':1}, k:{'tensão':2,'perseguição':2,'reviravoltas':2}, why:'tensão'},
+   {l:'Rir e relaxar', s:'comédia leve', g:{'Comédia':4,'Animação':3,'Romance':2}, k:{'humor':3}, why:'humor'},
+   {l:'Me emocionar', s:'drama, histórias reais', g:{'Drama':4,'Romance':2}, k:{'emocionante':3,'inspirado em fatos reais':2}, why:'emoção'},
+   {l:'Ação sem pensar muito', s:'pipoca e ritmo rápido', g:{'Ação':3,'Ficção Científica':2}, k:{'filme pipoca':3,'ritmo rápido':2,'perseguição':1}, why:'ação e ritmo'}]},
+ {id:'quem', t:'Com quem você vai assistir?', o:[
+   {l:'Sozinho(a)', s:'sem restrição'},
+   {l:'Com amigos', k:{'filme pipoca':2,'humor':1,'ritmo rápido':1}, why:'bom para ver com amigos'},
+   {l:'Em casal', g:{'Romance':3,'Comédia':2}, k:{'emocionante':1,'humor':1}, why:'bom para ver a dois'},
+   {l:'Com a família ou crianças', s:'só filmes até 12 anos, sem terror', g:{'Animação':4,'Comédia':1}, k:{'humor':1}, max:12, semTerror:true, why:'dá para ver em família'}]},
+ {id:'tempo', t:'Quanto tempo você tem?', o:[
+   {l:'Até 1h40', dmax:100, why:'até 1h40'}, {l:'Até 2h', dmax:120, why:'até 2h'}, {l:'Tanto faz', s:'pode ser longo'}]},
+ {id:'peso', t:'Pode ser pesado?', o:[
+   {l:'Pode, quanto mais intenso melhor', k:{'tensão':1}},
+   {l:'Um pouco, sem exagero', s:'até 14 anos', max:14, why:'sem exagero'},
+   {l:'Nada pesado hoje', s:'até 12 anos, sem terror', max:12, semTerror:true, why:'leve'}]},
+ {id:'onde', t:'Onde você costuma assistir?', multi:true, opcional:true}
+];
+const qz = {i:0, ans:{}, pl:new Set()};
+function qPlats(){ return [...new Set(FILMS.flatMap(platsOf))].sort((a,b)=>a.localeCompare(b,'pt')); }
+function qSteps(){ return QS.filter(q => q.id!=='onde' || !st.pl.size); }
+function qScore(f){
+  let s = (f.notas&&f.notas.imdb||6) * 0.35; const why = [];
+  const plats = qz.pl.size ? qz.pl : st.pl;
+  for(const q of QS){ const o = qz.ans[q.id]; if(!o) continue;
+    let hit = 0;
+    if(o.g && o.g[f.genero]){ s += o.g[f.genero]; hit = 1; }
+    if(o.k) for(const [k,v] of Object.entries(o.k)) if(has(f,k)){ s += v; hit = 1; }
+    if(o.max!=null){ if(idade(f) > o.max) s -= 12; else hit = hit || (q.id!=='clima'); }
+    if(o.semTerror && f.genero==='Terror') s -= 12;
+    if(o.dmax){ if((f.duracao||0) > o.dmax) s -= 8; else hit = 1; }
+    if(hit && o.why) why.push(o.why);
+  }
+  if(plats.size){ const p = platsOf(f).filter(x=>plats.has(x)); if(p.length){ s += 5; why.push('está no '+p[0]); } else s -= 4; }
+  return [s, why];
+}
+function qOpen(){ qz.i = 0; qz.ans = {}; qz.pl = new Set(); const o=$('#qz'); o.hidden=false; document.body.style.overflow='hidden'; qRender(); gc('quiz-inicio','Quiz: início'); }
+function qClose(){ $('#qz').hidden = true; if($('#ov').hidden) document.body.style.overflow=''; }
+function qShell(inner, step, total){
+  return `<div class="dlg"><div class="hd"><button class="x" type="button" aria-label="Fechar" id="qcl">×</button>
+    <div class="qstep">${step?`Pergunta ${step} de ${total}`:'Seu resultado'}</div>
+    <h2 id="qt">${inner.t}</h2>${step?`<div class="qbar"><i style="width:${Math.round((step-1)/total*100)}%"></i></div>`:''}</div>
+    <div class="bd">${inner.b}</div></div>`;
+}
+function qRender(){
+  const steps = qSteps(), o = $('#qz');
+  if(qz.i >= steps.length) return qResult();
+  const q = steps[qz.i];
+  let b;
+  if(q.id==='onde'){
+    b = `<p class="why">Marque as que você assina. Se pular, mostro filmes de qualquer lugar.</p>
+      <div class="chips" style="flex-wrap:wrap">${qPlats().map(p=>`<button type="button" class="chip" data-p="${esc(p)}" aria-pressed="${qz.pl.has(p)}">${esc(p)}</button>`).join('')}</div>
+      <div class="qnav"><button class="btn" type="button" id="qnext">${qz.pl.size?'Ver meu filme':'Pular e ver meu filme'}</button>${qz.i?'<button class="back" type="button" id="qback">Voltar</button>':''}</div>`;
+  } else {
+    b = `<div class="qopts">${q.o.map((x,i)=>`<button type="button" class="qopt" data-i="${i}" aria-pressed="${qz.ans[q.id]===x}">${esc(x.l)}${x.s?`<span>${esc(x.s)}</span>`:''}</button>`).join('')}</div>
+      ${qz.i?'<div class="qnav"><button class="back" type="button" id="qback">Voltar</button></div>':''}`;
+  }
+  o.innerHTML = qShell({t:esc(q.t), b}, qz.i+1, steps.length);
+  $('#qcl').onclick = qClose; o.onclick = e => { if(e.target===o) qClose(); };
+  if($('#qback')) $('#qback').onclick = () => { qz.i--; qRender(); };
+  o.querySelectorAll('.qopt').forEach(btn => btn.onclick = () => { qz.ans[q.id] = q.o[+btn.dataset.i]; qz.i++; qRender(); });
+  o.querySelectorAll('.chip[data-p]').forEach(c => c.onclick = () => { const p=c.dataset.p; qz.pl.has(p)?qz.pl.delete(p):qz.pl.add(p); qRender(); });
+  if($('#qnext')) $('#qnext').onclick = () => { if(qz.pl.size){ st.pl = new Set(qz.pl); savePl(); render(); } qz.i++; qRender(); };
+  const f = o.querySelector('.qopt,.chip,#qnext'); if(f) f.focus({preventScroll:true});
+  o.scrollTop = 0;
+}
+function qResult(){
+  const r = FILMS.map(f => [f, ...qScore(f)]).sort((a,b) => b[1]-a[1]).slice(0,3);
+  const [best, bs, bwhy] = r[0];
+  gc('quiz-resultado-'+best.id, 'Quiz: '+best.titulo);
+  const notes = f => f.notas&&f.notas.imdb!=null ? ` · IMDb ${String(f.notas.imdb).replace('.',',')}` : '';
+  const b = `<div class="qres" style="--gc:${col(best)}"><div class="g" style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase">${esc(best.genero)} · ${best.ano} · ${dur(best.duracao)}${notes(best)}</div>
+      <h3>${esc(best.titulo)}</h3><p>${esc(best.sinopse)}</p>
+      ${bwhy.length?`<p class="why"><b>Combina porque:</b> ${esc([...new Set(bwhy)].join(', '))}.</p>`:''}
+      <div class="qnav"><button class="btn" type="button" data-open="${esc(best.id)}">Abrir a ficha</button><button class="btn ghost" type="button" id="qshare">Compartilhar</button><span class="copied" id="qcopied" hidden>Link copiado!</span></div></div>
+    ${r.length>1?`<div><h3>Também pode combinar</h3><div class="sim">${r.slice(1).map(([x])=>`<button type="button" class="simc" data-open="${esc(x.id)}" style="--gc:${col(x)}"><b>${esc(x.titulo)}</b><span>${esc(x.genero)} · ${x.ano}${notes(x)}</span></button>`).join('')}</div></div>`:''}
+    <div class="qnav"><button class="btn ghost" type="button" id="qagain">Refazer o quiz</button></div>`;
+  const o = $('#qz'); o.innerHTML = qShell({t:'Seu filme de hoje', b}, 0, 0);
+  $('#qcl').onclick = qClose; o.onclick = e => { if(e.target===o) qClose(); };
+  o.querySelectorAll('[data-open]').forEach(btn => btn.onclick = () => { qClose(); openFilm(btn.dataset.open); });
+  $('#qagain').onclick = () => { qz.i = 0; qz.ans = {}; qz.pl = new Set(); qRender(); };
+  $('#qshare').onclick = async () => {
+    const url = location.href.split('#')[0] + '#f-' + best.id, txt = `O quiz do Guia de Filmes escolheu ${best.titulo} para mim. E para você?`;
+    try { if(navigator.share){ await navigator.share({title:'Guia de Filmes', text:txt, url}); return; } } catch(e) { return; }
+    try { await navigator.clipboard.writeText(txt+' '+url); $('#qcopied').hidden = false; } catch(e) { $('#qcopied').textContent = url; $('#qcopied').hidden = false; }
+  };
+  $('#qcl').focus(); o.scrollTop = 0;
+}
+$('#quiz').onclick = qOpen;
+document.addEventListener('keydown', e => { if(e.key==='Escape' && !$('#qz').hidden) qClose(); });
 $('#q').oninput = e => { st.q = e.target.value; render(); };
 let fpY = 0;
 function setFp(open){ $('#fp').hidden = !open; $('#ftog').setAttribute('aria-expanded', open); fpY = window.scrollY; }
