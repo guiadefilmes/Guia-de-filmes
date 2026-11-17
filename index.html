@@ -96,6 +96,12 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .card .more{margin-top:auto;color:var(--accent);font-weight:600;font-size:14px;background:none;border:0;padding:0;text-align:left}
 .card.click{cursor:pointer}
 .rasc{margin-left:6px;background:var(--fg);color:var(--bg);border-radius:999px;padding:2px 8px;font-size:10px;letter-spacing:.06em}
+.sim{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.simc{text-align:left;background:var(--bg);border:2px solid var(--gc);border-radius:8px;padding:10px 12px;display:grid;gap:2px}
+.simc b{font-size:15px;line-height:1.25}
+.simc span{font-size:12px;color:var(--muted)}
+.simc:hover{background:color-mix(in srgb,var(--gc) 14%,var(--bg))}
+.hint{font-size:12px;color:var(--muted);flex:0 0 auto}
 .empty{margin-top:32px;padding:28px;border:1px dashed var(--line);border-radius:10px;color:var(--muted)}
 .ov{position:fixed;inset:0;z-index:20;background:rgba(10,8,7,.72);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:max(16px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 24px max(12px,env(safe-area-inset-left,0px))}
 .dlg{background:var(--surface);border:4px solid var(--gc);border-radius:12px;width:100%;max-width:720px;margin-top:4vh;overflow:hidden;min-width:0}
@@ -137,6 +143,8 @@ footer{margin-top:48px;color:var(--muted);font-size:13px;border-top:1px solid va
     <div class="fp" id="fp" hidden>
       <div class="chips" id="gen" aria-label="Filtrar por gênero"><span class="lab">Gênero</span></div>
       <div class="chips" id="kw" aria-label="Filtrar por palavras-chave"><span class="lab">Clima</span></div>
+      <div class="chips" id="tm" aria-label="Filtrar por duração"><span class="lab">Tempo</span></div>
+      <div class="chips" id="pl" aria-label="Filtrar pelas plataformas que você assina"><span class="lab">Eu assino</span></div>
     </div>
     <div class="chips" id="clr" hidden><span class="act" id="act"></span><button class="clear" id="clear" type="button">Limpar filtros</button></div>
   </div>
@@ -152,7 +160,12 @@ const FILMS = JSON.parse(document.getElementById('data').textContent);
 // Cor da borda por gênero (a mesma dos vídeos)
 const GC = {'Ação':'#ff3b30','Aventura':'#ff9f0a','Animação':'#30d1be','Comédia':'#ffd60a','Crime':'#78909c','Documentário':'#aaaaaa','Drama':'#0a84ff','Família':'#78dc5a','Fantasia':'#d65af0','Faroeste':'#c48246','Ficção Científica':'#00c8ff','Guerra':'#80965a','História':'#bea06e','Mistério':'#5e5ce6','Música':'#ff69b4','Romance':'#ff78a0','Suspense':'#af52ff','Terror':'#a5142d','Thriller':'#af52ff'};
 const $ = s => document.querySelector(s);
-const st = {q:'', gen:new Set(), kw:new Set(), last:null};
+const TEMPOS = [['Até 1h40', m=>m<=100], ['Até 2h', m=>m<=120], ['Mais de 2h', m=>m>120]];
+const plat = p => String(p).replace(/\s*\(canal .*\)$/,'').trim();   // "Universal+ (canal Prime Video)" -> "Universal+"
+const platsOf = f => { const w = f.onde_assistir||{}; return [...new Set([...(w.assinatura||[]), ...(w.gratis||[])].map(plat))]; };
+let savedPl = []; try { savedPl = JSON.parse(localStorage.getItem('guia-plataformas')||'[]'); } catch(e) {}
+const st = {q:'', gen:new Set(), kw:new Set(), tm:new Set(), pl:new Set(Array.isArray(savedPl)?savedPl:[]), last:null};
+function savePl(){ try { localStorage.setItem('guia-plataformas', JSON.stringify([...st.pl])); } catch(e) {} }
 const norm = s => (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const col = f => GC[f.genero] || '#fa5230';
@@ -162,15 +175,17 @@ function haystack(f){ return norm([f.titulo,f.original,f.genero,f.diretor,f.sino
 function filtered(){
   const q = norm(st.q).trim();
   return FILMS.filter(f => (!st.gen.size || st.gen.has(f.genero)) &&
-    [...st.kw].every(k => (f.palavras||[]).includes(k)) && (!q || haystack(f).includes(q)));
+    [...st.kw].every(k => (f.palavras||[]).includes(k)) && (!q || haystack(f).includes(q)) &&
+    (!st.tm.size || TEMPOS.some(([l,ok]) => st.tm.has(l) && ok(f.duracao||0))) &&
+    (!st.pl.size || platsOf(f).some(p => st.pl.has(p))));
 }
-function chipRow(el, values, set, colorOf){
+function chipRow(el, values, set, colorOf, single, after){
   [...el.querySelectorAll('.chip')].forEach(c=>c.remove());
   values.forEach(v => {
     const b = document.createElement('button'); b.type='button'; b.className='chip';
     b.setAttribute('aria-pressed', set.has(v)); if(colorOf) b.style.setProperty('--gc', colorOf(v));
     b.innerHTML = (colorOf?'<i></i>':'') + esc(v);
-    b.onclick = () => { set.has(v) ? set.delete(v) : set.add(v); render(); };
+    b.onclick = () => { if(set.has(v)) set.delete(v); else { if(single) set.clear(); set.add(v); } if(after) after(); render(); };
     el.appendChild(b);
   });
 }
@@ -189,13 +204,18 @@ function render(){
   const genres = [...new Set(FILMS.map(f=>f.genero))].sort((a,b)=>a.localeCompare(b,'pt'));
   const kws = [...new Set(FILMS.flatMap(f=>f.palavras||[]))].sort((a,b)=>a.localeCompare(b,'pt'));
   chipRow($('#gen'), genres, st.gen, v=>GC[v]||'#fa5230'); chipRow($('#kw'), kws, st.kw, null);
+  chipRow($('#tm'), TEMPOS.map(t=>t[0]), st.tm, null, true);
+  const pls = [...new Set(FILMS.flatMap(platsOf))].sort((a,b)=>a.localeCompare(b,'pt'));
+  [...st.pl].forEach(p => { if(!pls.includes(p)) st.pl.delete(p); });
+  chipRow($('#pl'), pls, st.pl, null, false, savePl);
+  if(!$('#pl .hint')){ const h=document.createElement('span'); h.className='hint'; h.textContent='fica salvo neste aparelho'; $('#pl').appendChild(h); } else $('#pl').appendChild($('#pl .hint'));
   const list = filtered(), g = $('#grid'); g.innerHTML=''; list.forEach(f=>g.appendChild(card(f)));
   $('#count').textContent = FILMS.length===1 ? '1 filme no guia por enquanto' : `${list.length} de ${FILMS.length} filmes`;
-  const nf = st.gen.size + st.kw.size; $('#fn').hidden = !nf; $('#fn').textContent = nf;
-  $('#act').textContent = nf ? [...st.gen, ...st.kw].join(' · ') : '';
+  const nf = st.gen.size + st.kw.size + st.tm.size + st.pl.size; $('#fn').hidden = !nf; $('#fn').textContent = nf;
+  $('#act').textContent = nf ? [...st.gen, ...st.kw, ...st.tm, ...[...st.pl].map(p=>'assino '+p)].join(' · ') : '';
   $('#clr').hidden = !(nf||st.q);
   const e = $('#empty'); e.hidden = list.length>0;
-  if(!list.length) e.textContent = 'Nenhum filme combina com esses filtros. Tire uma palavra-chave ou um gênero para ver mais opções.';
+  if(!list.length) e.textContent = st.pl.size ? 'Nenhum filme do guia está nas plataformas que você marcou com esses filtros. Marque outra plataforma ou tire um filtro para ver mais opções.' : 'Nenhum filme combina com esses filtros. Tire uma palavra-chave ou um gênero para ver mais opções.';
 }
 function gc(path, title, n){ try{ if(window.goatcounter && goatcounter.count) goatcounter.count({path, title, event:true}); else if((n||0) < 20) setTimeout(()=>gc(path, title, (n||0)+1), 500); }catch(e){} }  // espera o contador carregar (ficha aberta por link direto)
 function vidsHtml(f){
@@ -211,6 +231,17 @@ function watchHtml(f){
     .map(([k,l,c])=>`<div class="wr"><span class="wl">${l}</span>${w[k].map(p=>`<span class="plat ${c}">${esc(p)}</span>`).join('')}</div>`).join('');
   const dt = w.data ? w.data.split('-').reverse().join('/') : '';
   return `<div><h3>Onde assistir no Brasil</h3><div class="watch">${rows||'<p class="wd">Não está disponível em streaming no Brasil no momento.</p>'}${dt?`<span class="wd">Consultado em ${dt}. Os catálogos mudam com frequência.</span>`:''}</div></div>`;
+}
+function similar(f){
+  return FILMS.filter(x => x.id !== f.id).map(x => {
+    const kw = (x.palavras||[]).filter(k => (f.palavras||[]).includes(k)).length;
+    const s = (x.genero === f.genero ? 3 : 0) + kw * 1.5 - Math.abs((x.notas&&x.notas.imdb||6) - (f.notas&&f.notas.imdb||6)) * 0.4;
+    return [s, kw, x];
+  }).filter(([s,kw,x]) => x.genero === f.genero || kw >= 2).sort((a,b) => b[0]-a[0]).slice(0,3).map(r=>r[2]);
+}
+function simHtml(f){
+  const l = similar(f); if(!l.length) return '';
+  return `<div><h3>Se você curtir, veja também</h3><div class="sim">${l.map(x=>`<button type="button" class="simc" data-id="${esc(x.id)}" style="--gc:${col(x)}"><b>${esc(x.titulo)}</b><span>${esc(x.genero)} · ${x.ano}${x.notas&&x.notas.imdb!=null?' · IMDb '+String(x.notas.imdb).replace('.',','):''}</span></button>`).join('')}</div></div>`;
 }
 function openFilm(id, rolling){
   const f = FILMS.find(x=>x.id===id); if(!f) return;
@@ -229,9 +260,11 @@ function openFilm(id, rolling){
       <div><h3>Elenco</h3><ul class="cast">${(f.elenco||[]).map(([a,p])=>`<li>${esc(a)}<span>${esc(p)}</span></li>`).join('')}</ul></div>
       <div><h3>Ficha</h3><p>Direção de ${esc(f.diretor)} · ${dur(f.duracao)} · classificação ${esc(f.classificacao||'')}</p></div>
       <div class="tags">${(f.palavras||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+      ${simHtml(f)}
       <div class="spoil">Esta ficha não traz spoilers: ela para antes das reviravoltas da história.</div>
     </div></div>`;
   $('#cl').onclick = closeFilm; $('#cl').focus();
+  ov.querySelectorAll('.simc').forEach(b => b.onclick = () => openFilm(b.dataset.id));
   ov.onclick = e => { if(e.target===ov) closeFilm(); };
   ov.scrollTop = 0;
   if (location.hash !== '#f-'+id) history.replaceState(null,'','#f-'+id);
@@ -243,7 +276,7 @@ window.addEventListener('hashchange', route);
 
 $('#rand').onclick = () => {
   const pool = filtered(), all = pool.length ? pool : FILMS;
-  if(!pool.length){ st.gen.clear(); st.kw.clear(); st.q=''; $('#q').value=''; render(); }
+  if(!pool.length){ st.gen.clear(); st.kw.clear(); st.tm.clear(); st.q=''; $('#q').value=''; render(); }
   let opts = all.filter(f=>f.id!==st.last); if(!opts.length) opts = all;
   const pick = opts[Math.floor(Math.random()*opts.length)]; st.last = pick.id;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -258,7 +291,7 @@ function setFp(open){ $('#fp').hidden = !open; $('#ftog').setAttribute('aria-exp
 $('#ftog').onclick = () => setFp($('#fp').hidden);
 (function(){ const q=$('#q'), ph=()=>{ q.placeholder = innerWidth<520 ? 'Filme, ator ou tema' : 'Buscar por título, ator, diretor ou tema'; }; ph(); addEventListener('resize', ph); })();
 window.addEventListener('scroll', () => { if(!$('#fp').hidden && Math.abs(window.scrollY - fpY) > 220) setFp(false); }, {passive:true});
-$('#clear').onclick = () => { st.gen.clear(); st.kw.clear(); st.q=''; $('#q').value=''; render(); };
+$('#clear').onclick = () => { st.gen.clear(); st.kw.clear(); st.tm.clear(); st.pl.clear(); savePl(); st.q=''; $('#q').value=''; render(); };
 render(); route();
 </script>
 
