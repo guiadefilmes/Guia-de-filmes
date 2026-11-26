@@ -137,6 +137,12 @@ ul.cast li span{display:block;color:var(--muted);font-size:13px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 footer{margin-top:48px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:16px}
+.xmas{display:flex;align-items:center;gap:14px;width:100%;box-sizing:border-box;margin:6px 0 14px;padding:14px 18px;border-radius:16px;border:2px solid #ecbe50;background:linear-gradient(135deg,#ce202e,#9e1520);color:#fff;font:inherit;text-align:left;cursor:pointer;box-shadow:0 6px 22px rgba(206,32,46,.28)}
+.xmas[hidden]{display:none}
+.xmas .xs{font-size:28px;color:#ecbe50;line-height:1}
+.xmas b{display:block;font-size:17px}.xmas small{display:block;opacity:.9;font-size:13px}
+.xmas .xgo{margin-left:auto;font-weight:700;color:#ecbe50;white-space:nowrap}
+.xmas:focus-visible{outline:3px solid #ecbe50;outline-offset:2px}
 </style>
 
 </head>
@@ -152,6 +158,7 @@ footer{margin-top:48px;color:var(--muted);font-size:13px;border-top:1px solid va
       <span class="count" id="count"></span>
     </div>
   </section>
+  <button class="xmas" id="xmas" type="button" hidden><span class="xs" aria-hidden="true">❄</span><span><b>Especial de Natal</b><small id="xmasn"></small></span><span class="xgo">Ver filmes →</span></button>
 
   <div class="bar" role="search">
     <div class="search"><label class="sr" for="q">Buscar filme</label>
@@ -408,6 +415,15 @@ $('#ftog').onclick = () => setFp($('#fp').hidden);
 (function(){ const q=$('#q'), ph=()=>{ q.placeholder = innerWidth<520 ? 'Filme, ator ou tema' : 'Buscar por título, ator, diretor ou tema'; }; ph(); addEventListener('resize', ph); })();
 window.addEventListener('scroll', () => { if(!$('#fp').hidden && Math.abs(window.scrollY - fpY) > 220) setFp(false); }, {passive:true});
 $('#clear').onclick = () => { st.gen.clear(); st.kw.clear(); st.tm.clear(); st.pl.clear(); savePl(); st.q=''; $('#q').value=''; render(); };
+// Especial de Natal: faixa de destaque de 1º de dezembro a 6 de janeiro (ou com ?natal na URL), se houver filme com a palavra "natal"
+(function(){
+  const d = new Date(), m = d.getMonth(), dia = d.getDate(), nat = FILMS.filter(f => (f.palavras||[]).includes('natal'));
+  const epoca = m === 11 || (m === 0 && dia <= 6) || /[?&]natal\b/.test(location.search);
+  const b = $('#xmas'); if (!b || !epoca || !nat.length) return;
+  $('#xmasn').textContent = nat.length === 1 ? '1 filme para ver nas festas' : nat.length + ' filmes para ver nas festas';
+  b.hidden = false;
+  b.onclick = () => { st.gen.clear(); st.tm.clear(); st.kw.clear(); st.kw.add('natal'); st.q=''; $('#q').value=''; render(); $('#grid').scrollIntoView({behavior:'smooth', block:'start'}); };
+})();
 render(); route();
 </script>
 
